@@ -23,6 +23,7 @@ const scene = new THREE.Scene()
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
 scene.add(ambientLight)
 const ambientGui = gui.addFolder('ambient').close()
+ambientGui.addColor(ambientLight, 'color')
 ambientGui.add(ambientLight, 'intensity').min(0).max(1).step(0.01).name('intensity')
 ambientGui.add(ambientLight, 'visible').name('enable')
 
@@ -34,6 +35,7 @@ directionalLightHelper.visible = false
 scene.add(directionalLightHelper)
 
 const directionalGui = gui.addFolder('directional').close()
+directionalGui.addColor(directionalLight, 'color')
 directionalGui.add(directionalLight, 'intensity').min(0).max(1).step(0.01).name('intensity')
 directionalGui.add(directionalLight, 'visible').name('enable')
 directionalGui.add(directionalLightHelper, 'visible').name('directionalLightHelper')
@@ -47,6 +49,8 @@ hemisphereLightHelper.visible = false
 scene.add(hemisphereLightHelper)
 
 const hemisphereGui = gui.addFolder('hemisphere').close()
+hemisphereGui.addColor(hemisphereLight, 'color').name('skyColor')
+hemisphereGui.addColor(hemisphereLight, 'groundColor')
 hemisphereGui.add(hemisphereLight, 'intensity').min(0).max(1).step(0.01).name('intensity')
 hemisphereGui.add(hemisphereLight, 'visible').name('enable')
 hemisphereGui.add(hemisphereLightHelper, 'visible').name('hemisphereLightHelper')
@@ -64,6 +68,7 @@ pointLight.distance = 3
 pointLight.decay = 2
 
 const pointGui = gui.addFolder('point').close()
+pointGui.addColor(pointLight, 'color')
 pointGui.add(pointLight, 'intensity').min(0).max(1).step(0.01).name('intensity')
 pointGui.add(pointLight, 'visible').name('enable')
 pointGui.add(pointLight, 'distance').min(0).max(5).step(0.1).name('distance')
@@ -81,6 +86,7 @@ rectAreaLightHelper.visible = false
 scene.add(rectAreaLightHelper)
 
 const rectAreaGui = gui.addFolder('rectArea').close()
+rectAreaGui.addColor(rectAreaLight, 'color')
 rectAreaGui.add(rectAreaLight, 'intensity').min(0).max(5).step(0.01).name('intensity')
 rectAreaGui.add(rectAreaLight, 'visible').name('enable')
 rectAreaGui.add(rectAreaLightHelper, 'visible').name('rectAreaLightHelper')
@@ -102,6 +108,7 @@ spotLightHelper.visible = false
 scene.add(spotLightHelper)
 
 const spotGui = gui.addFolder('spotLight').close()
+spotGui.addColor(spotLight, 'color')
 spotGui.add(spotLight, 'intensity').min(0).max(1).step(0.01).name('intensity')
 spotGui.add(spotLight, 'distance').min(0).max(15).step(0.01).name('distance').onChange(() => spotLightHelper.update())
 spotGui.add(spotLight, 'angle').min(0).max(Math.PI/2).step(0.1).name('angle').onChange(() => spotLightHelper.update())
