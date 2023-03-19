@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'lil-gui'
+import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js';
+
 
 /**
  * Base
@@ -17,14 +19,98 @@ const scene = new THREE.Scene()
 /**
  * Lights
  */
+// uniform light everything, from every place
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
 scene.add(ambientLight)
+const ambientGui = gui.addFolder('ambient').close()
+ambientGui.add(ambientLight, 'intensity').min(0).max(1).step(0.01).name('intensity')
+ambientGui.add(ambientLight, 'visible').name('enable')
 
-const pointLight = new THREE.PointLight(0xffffff, 0.5)
-pointLight.position.x = 2
-pointLight.position.y = 3
-pointLight.position.z = 4
+const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.3)
+directionalLight.position.set(1, 0.5, 0)
+scene.add(directionalLight)
+const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight)
+directionalLightHelper.visible = false
+scene.add(directionalLightHelper)
+
+const directionalGui = gui.addFolder('directional').close()
+directionalGui.add(directionalLight, 'intensity').min(0).max(1).step(0.01).name('intensity')
+directionalGui.add(directionalLight, 'visible').name('enable')
+directionalGui.add(directionalLightHelper, 'visible').name('directionalLightHelper')
+
+// red from the top, blue from the bottom, mix in middle
+// usefull for bouncing light with multiple colors
+const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.3)
+scene.add(hemisphereLight)
+const hemisphereLightHelper = new THREE.HemisphereLightHelper(hemisphereLight)
+hemisphereLightHelper.visible = false
+scene.add(hemisphereLightHelper)
+
+const hemisphereGui = gui.addFolder('hemisphere').close()
+hemisphereGui.add(hemisphereLight, 'intensity').min(0).max(1).step(0.01).name('intensity')
+hemisphereGui.add(hemisphereLight, 'visible').name('enable')
+hemisphereGui.add(hemisphereLightHelper, 'visible').name('hemisphereLightHelper')
+
+// this is like a light bulb
+// lights everyplace from a position
+const pointLight = new THREE.PointLight(0xff9000, 0.5)
+pointLight.position.set(1, -0.5, 1)
+const pointLightHelper = new THREE.PointLightHelper(pointLight)
+pointLightHelper.visible = false
+scene.add(pointLightHelper)
 scene.add(pointLight)
+// by default the light doesn't decay over distance
+pointLight.distance = 3
+pointLight.decay = 2
+
+const pointGui = gui.addFolder('point').close()
+pointGui.add(pointLight, 'intensity').min(0).max(1).step(0.01).name('intensity')
+pointGui.add(pointLight, 'visible').name('enable')
+pointGui.add(pointLight, 'distance').min(0).max(5).step(0.1).name('distance')
+pointGui.add(pointLight, 'decay').min(0).max(10).step(0.1).name('decay')
+pointGui.add(pointLightHelper, 'visible').name('pointLightHelper')
+
+// rectangle source like photoshoot
+// only works with meshStandard and meshPhysical materials
+const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 2, 1, 1)
+rectAreaLight.position.set(-1.5, 0.5, 1.5)
+rectAreaLight.lookAt(new THREE.Vector3())
+scene.add(rectAreaLight)
+const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight)
+rectAreaLightHelper.visible = false
+scene.add(rectAreaLightHelper)
+
+const rectAreaGui = gui.addFolder('rectArea').close()
+rectAreaGui.add(rectAreaLight, 'intensity').min(0).max(5).step(0.01).name('intensity')
+rectAreaGui.add(rectAreaLight, 'visible').name('enable')
+rectAreaGui.add(rectAreaLightHelper, 'visible').name('rectAreaLightHelper')
+
+// basically a flashlight
+const spotLight = new THREE.SpotLight(
+    0x78ff00,
+    0.5,
+    10, //distance
+    Math.PI * 0.1, //angle
+    0.25, //penumbra from edges
+    1 // decay
+)
+spotLight.position.set(0, 2, 3)
+spotLight.target.position.x = -0.75
+scene.add(spotLight)
+const spotLightHelper = new THREE.SpotLightHelper(spotLight)
+spotLightHelper.visible = false
+scene.add(spotLightHelper)
+
+const spotGui = gui.addFolder('spotLight').close()
+spotGui.add(spotLight, 'intensity').min(0).max(1).step(0.01).name('intensity')
+spotGui.add(spotLight, 'distance').min(0).max(15).step(0.01).name('distance').onChange(() => spotLightHelper.update())
+spotGui.add(spotLight, 'angle').min(0).max(Math.PI/2).step(0.1).name('angle').onChange(() => spotLightHelper.update())
+spotGui.add(spotLight, 'penumbra').min(0).max(1).step(0.1).name('penumbra')
+spotGui.add(spotLight, 'visible').name('enable')
+spotGui.add(spotLightHelper, 'visible').name('spotLightHelper')
+
+// try to use ambientLight and directional/point lights
+// spotLight and rectArea cost a LOT
 
 /**
  * Objects
